@@ -1,0 +1,15 @@
+asgiref==3.7.2
+coverage==7.3.2
+django==5.0
+django-oauth-plus==2.2.9
+django-oauth2-provider==0.2.6.1
+djangorestframework==3.14.0
+djangorestframework-oauth==1.1.0
+djangorestframework-simplejwt==5.3.1
+django_rest_swagger==2.2.0
+factory_boy==3.3.0
+gunicorn==21.2.0
+oauth2==1.9.0.post1
+pytz==2023.3.post1
+tox==4.11.4
+uvicorn==0.24.0
