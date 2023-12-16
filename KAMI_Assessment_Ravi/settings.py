@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'provider',
     'provider.oauth2',
+    # Application module
+    'aircraft_api',
+    'user_api',
 ]
 
 MIDDLEWARE = [
@@ -154,7 +157,7 @@ REST_FRAMEWORK = {
 
 # Django Rest Framework Simple JWT settings
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
 
@@ -162,3 +165,7 @@ SIMPLE_JWT = {
 FUEL_TANK_MULTIPLIER = 200
 BASIC_FUEL_MULTIPLIER = 0.80
 ADDITIONAL_FUEL_MULTIPLIER = 0.002
+
+# User minimum characters
+MINIMUM_USERNAME_LENGTH = 6
+MINIMUM_PASSWORD_LENGTH = 8
