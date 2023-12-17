@@ -1,9 +1,8 @@
 """This module provide extended User model"""
-from datetime import timezone
-
 from django.db import models
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from core.managers import UserManager
@@ -26,6 +25,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
     objects = UserManager()
 
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ["email", "password"]
 
     class Meta:

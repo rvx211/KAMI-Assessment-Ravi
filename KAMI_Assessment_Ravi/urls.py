@@ -14,13 +14,39 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
 from django.urls import (include, path, re_path)
 
+from django.conf.urls.static import static
+from rest_framework_swagger.views import get_swagger_view
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework import permissions
+
+schema_view = get_schema_view(
+   openapi.Info(
+      title="KAMI Assessment Ravi",
+      default_version='v1',
+      description="This is API description for KAMI assessment",
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="rvx211@gmail.com"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path(r'^v1/aircraft/', include('aircraft_api.api_v1.urls', namespace='v1')),
-    re_path(r'^v2/aircraft/', include('aircraft_api.api_v2.urls', namespace='v2')),
-    re_path(r'^v1/user/', include('user_api.api_v1.urls', namespace='v1')),
-    re_path(r'^v2/user/', include('user_api.api_v2.urls', namespace='v2'))
+    path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    re_path(r'^v1/aircraft/', include(('aircraft_api.api_v1.urls', 'aircraft_api'), namespace='v1')),
+    re_path(r'^v2/aircraft/', include(('aircraft_api.api_v2.urls', 'aircraft_api'), namespace='v2')),
+    re_path(r'^v1/user/', include(('user_api.api_v1.urls', 'user_api'), namespace='v1')),
+    re_path(r'^v2/user/', include(('user_api.api_v2.urls', 'user_api'), namespace='v2'))
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

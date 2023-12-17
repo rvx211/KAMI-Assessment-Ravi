@@ -17,6 +17,9 @@ class UserLoginSerializer(serializers.Serializer):
     """
     username = serializers.CharField()
     password = serializers.CharField()
+    
+    class Meta:
+        ref_name = "UserLoginSerializer v1"
 
     def validate(self, attrs: dict) -> dict:
         """This is user login serializer validation

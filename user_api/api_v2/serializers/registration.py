@@ -32,6 +32,7 @@ class UserRegistrationRequestSerializer(serializers.ModelSerializer):
         """
         model = User
         fields = ['username', 'email', 'password']
+        ref_name = "UserRegistrationRequestSerializer v2"
 
     def validate_username(self, value: str) -> str:
         """This is function to validate username input

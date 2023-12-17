@@ -27,6 +27,7 @@ class AircraftSerializer(serializers.ModelSerializer):
             'aircraft_passenger',
             'aircraft_total_fuel_consumption_per_minute',
             'aircraft_maximum_flight_time_in_minutes']
+        ref_name = "AircraftSerializer v2"
 
     def validate_aircraft_id(self, value: int) -> int:
         """This is the aircraft ID validation
@@ -62,7 +63,7 @@ class AircraftSerializer(serializers.ModelSerializer):
         """
         if value in (None, ""):
             raise AircraftPassengerEmptyException
-        if isinstance(value, int) is False:
+        if isinstance(value, float) is False:
             raise AircraftPassengerNotInteger
         return value
 
@@ -75,8 +76,8 @@ class AircraftSerializer(serializers.ModelSerializer):
         Returns:
             object: Aircraft model
         """
-        validated_data['user'] = self.context.get('user')
-        validated_data['username'] = self.context.get('user').username
+        validated_data['aircraft_user'] = self.context.get('user')
+        # validated_data['username'] = self.context.get('user').username
         Aircraft.objects.update_or_create(validated_data)
         return self.data
 
@@ -87,6 +88,9 @@ class AircraftListSerializer(serializers.Serializer):
         serializers (object): Django REST Framework serializer
     """
     aircraft = AircraftSerializer(many=True)
+    
+    class Meta:
+        ref_name = "AircraftListSerializer v1"
 
     def validate_aircraft(self, value: list) -> list:
         """This is validate aircraft list function

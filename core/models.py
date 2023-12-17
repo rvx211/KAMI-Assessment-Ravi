@@ -17,10 +17,11 @@ class BaseModel(models.Model):
         """
         abstract = True
 
-    def save(self, *args: tuple, **kwargs: dict) -> None:
-        """This is override save function of base model
-        """
-        if not self.pk:
-            self.created_by = kwargs['username']
-        self.modified_by = kwargs['username']
-        super(BaseModel, self).save(*args, **kwargs)
+    # def save(self, *args: tuple, **kwargs: dict) -> None:
+    #     """This is override save function of base model
+    #     """
+    #     print(kwargs)
+    #     if not self.pk:
+    #         self.created_by = kwargs['username']
+    #     self.modified_by = kwargs['username']
+    #     super(BaseModel, self).save(*args, **kwargs)

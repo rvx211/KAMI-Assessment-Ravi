@@ -32,6 +32,7 @@ class UserRegistrationRequestSerializer(serializers.ModelSerializer):
         """
         model = User
         fields = ['username', 'email', 'password']
+        ref_name = "UserRegistrationRequestSerializer v1"
 
     def validate_username(self, value: str) -> str:
         """This is function to validate username input
@@ -61,13 +62,19 @@ class UserRegistrationRequestSerializer(serializers.ModelSerializer):
         Returns:
             str: Validated password
         """
+        def has_special_char(s):
+            for c in s:
+                if not (c.isalpha() or c.isdigit() or c == ' '):
+                    return True
+            return False
+  
         if value in (None, ""):
             raise PasswordEmptyException
         elif len(value) < settings.MINIMUM_PASSWORD_LENGTH:
             raise PasswordLengthException
         elif not (re.search(r'[a-zA-Z]+', value) and \
             re.search(r'\d+', value) and \
-            re.search(r'[!@#%^&*()_+-=[]{}|;\':\",./<>?~`]+', value) and \
+            has_special_char(value) and \
             any(x.isupper() for x in value) and \
             any(x.islower() for x in value)):
             raise PasswordCharacterValidationException
