@@ -103,7 +103,7 @@ class UserRegistrationRequestSerializer(serializers.ModelSerializer):
         """
         message = {}
         try:
-            User.objects.create(validated_data)
+            User.objects.create_user(**validated_data)
             message = {
                 "message": f"User {validated_data['username']} created successfully",
                 "status": status.HTTP_200_OK}

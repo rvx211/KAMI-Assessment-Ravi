@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from rest_framework import serializers
+from rest_framework import status
 
 from core.exceptions.email import (
     EmailEmptyException,
@@ -91,13 +92,21 @@ class UserRegistrationRequestSerializer(serializers.ModelSerializer):
             raise EmailFormatValidationException from exc
         return value
 
-    def create(self, validated_data: dict) -> object:
+    def create(self, validated_data: dict) -> dict:
         """This is override create method of user resgistration serializer
 
         Args:
             validated_data (dict): User registration validated data
 
         Returns:
-            object: User model
+            dict: User registration message
         """
-        return User.objects.create(validated_data)
+        message = {}
+        try:
+            User.objects.create_user(**validated_data)
+            message = {
+                "message": f"User {validated_data['username']} created successfully",
+                "status": status.HTTP_200_OK}
+        except Exception as e:
+            message = {"error": str(e), "status": status.HTTP_500_INTERNAL_SERVER_ERROR}
+        return message

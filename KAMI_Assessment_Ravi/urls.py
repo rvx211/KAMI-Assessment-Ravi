@@ -19,8 +19,8 @@ from django.urls import (include, path, re_path)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path(r'^v1/aircraft/', include('aircraft_api.urls', namespace='v1')),
-    re_path(r'^v2/aircraft/', include('aircraft_api.urls', namespace='v2')),
-    re_path(r'^v1/user/', include('user_api.urls', namespace='v1')),
-    re_path(r'^v2/user/', include('user_api.urls', namespace='v2'))
+    re_path(r'^v1/aircraft/', include('aircraft_api.api_v1.urls', namespace='v1')),
+    re_path(r'^v2/aircraft/', include('aircraft_api.api_v2.urls', namespace='v2')),
+    re_path(r'^v1/user/', include('user_api.api_v1.urls', namespace='v1')),
+    re_path(r'^v2/user/', include('user_api.api_v2.urls', namespace='v2'))
 ]
