@@ -29,65 +29,65 @@ class UserAPITest(APITestCase):
         self.register_user_url = 'user_v2:user-registration'
         self.login_user_url = 'user_v2:user-login'
         self.register_user_1 = {
-            "username": "", "email": "test01@email.com", "password": "&$P4ssw0rd01"
+            "username": "", "email": "v2test01@email.com", "password": "&$P4ssw0rd01"
         }
         self.register_user_2 = {
-            "username": "username02", "email": "", "password": "&$P4ssw0rd02"
+            "username": "v2username02", "email": "", "password": "&$P4ssw0rd02"
         }
         self.register_user_3 = {
-            "username": "username03", "email": "test03@email.com", "password": ""
+            "username": "v2username03", "email": "v2test03@email.com", "password": ""
         }
         self.register_user_4 = {
-            "username": "user", "email": "test04@email.com", "password": "&$P4ssw0rd04"
+            "username": "user", "email": "v2test04@email.com", "password": "&$P4ssw0rd04"
         }
         self.register_user_5 = {
-            "username": "username", "email": "test05@email.com", "password": "&$P4ssw0rd05"
+            "username": "username", "email": "v2test05@email.com", "password": "&$P4ssw0rd05"
         }
         self.register_user_6 = {
-            "username": "username06", "email": "test06emailcom", "password": "&$P4ssw0rd06"
+            "username": "v2username06", "email": "v2test06emailcom", "password": "&$P4ssw0rd06"
         }
         self.register_user_7 = {
-            "username": "username07", "email": "test07@email.com", "password": "&$P4"
+            "username": "v2username07", "email": "v2test07@email.com", "password": "&$P4"
         }
         self.register_user_8 = {
-            "username": "username08", "email": "test07@email.com", "password": "password"
+            "username": "v2username08", "email": "v2test07@email.com", "password": "password"
         }
         self.register_user_9 = {
-            "username": "username09", "email": "test09@email.com", "password": "&$P4ssw0rd09"
+            "username": "v2username09", "email": "v2test09@email.com", "password": "&$P4ssw0rd09"
         }
         self.register_user_10 = {
-            "username": "username10", "email": "test10@email.com", "password": "&$P4ssw0rd10"
+            "username": "v2username10", "email": "v2test10@email.com", "password": "&$P4ssw0rd10"
         }
         self.register_user_11 = {
-            "username": "username11", "email": "test11@email.com", "password": "&$P4ssw0rd11"
+            "username": "v2username11", "email": "v2test11@email.com", "password": "&$P4ssw0rd11"
         }
         self.login_user_1 = {
             "username": "", "password": "&$P4ssw0rdl01"
         }
         self.login_user_2 = {
-            "username": "logintest02", "password": ""
+            "username": "v2logintest02", "password": ""
         }
         self.login_user_3 = {
-            "username": "logintest03", "password": "&$P4ssw0rdl03"
+            "username": "v2logintest03", "password": "&$P4ssw0rdl03"
         }
         self.login_user_4 = {
-            "username": "logintest04", "password": "&$P4ssw0rd1"
+            "username": "v2logintest04", "password": "&$P4ssw0rd1"
         }
         self.login_user_5 = {
-            "username": "logintest05", "password": "&$P4ssw0rdl05"
+            "username": "v2logintest05", "password": "&$P4ssw0rdl05"
         }
         User.objects.create_user(
-            username="username09", email="test19@email.com", password="&$P4ssw0rd09")
+            username="v2username09", email="v2test19@email.com", password="&$P4ssw0rd09")
         User.objects.create_user(
-            username="username20", email="test10@email.com", password="&$P4ssw0rd10")
+            username="v2username20", email="v2test10@email.com", password="&$P4ssw0rd10")
         User.objects.create_user(
-            username="logintest01", email="logintest01@email.com", password="&$P4ssw0rdl01")
+            username="v2logintest01", email="v2logintest01@email.com", password="&$P4ssw0rdl01")
         User.objects.create_user(
-            username="logintest02", email="logintest02@email.com", password="&$P4ssw0rdl02")
+            username="v2logintest02", email="v2logintest02@email.com", password="&$P4ssw0rdl02")
         User.objects.create_user(
-            username="logintest04", email="logintest04@email.com", password="&$P4ssw0rdl04")
+            username="v2logintest04", email="v2logintest04@email.com", password="&$P4ssw0rdl04")
         User.objects.create_user(
-            username="logintest05", email="logintest05@email.com", password="&$P4ssw0rdl05")
+            username="v2logintest05", email="v2logintest05@email.com", password="&$P4ssw0rdl05")
 
     def test_register_empty_username(self):
         """This is user registration test with empty username
@@ -174,6 +174,7 @@ class UserAPITest(APITestCase):
         """
         response = self.client.post(reverse(self.register_user_url), data=self.register_user_11)
         content = ast.literal_eval(response.content.decode("UTF-8"))
+        print(content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(User.objects.filter(username=self.register_user_11['username']).count(), 1)
         self.assertEqual(content['message'], f"User {self.register_user_11['username']} created successfully")
