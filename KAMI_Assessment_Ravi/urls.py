@@ -44,8 +44,8 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     re_path(r'^v1/aircraft/', include(('aircraft_api.api_v1.urls', 'aircraft_api'), namespace='v1')),
     re_path(r'^v2/aircraft/', include(('aircraft_api.api_v2.urls', 'aircraft_api'), namespace='v2')),
-    re_path(r'^v1/user/', include(('user_api.api_v1.urls', 'user_api'), namespace='v1')),
-    re_path(r'^v2/user/', include(('user_api.api_v2.urls', 'user_api'), namespace='v2'))
+    re_path(r'^v1/user/', include(('user_api.api_v1.urls', 'user_api'), namespace='user_v1')),
+    re_path(r'^v2/user/', include(('user_api.api_v2.urls', 'user_api'), namespace='user_v2'))
 ]
 
 if settings.DEBUG:

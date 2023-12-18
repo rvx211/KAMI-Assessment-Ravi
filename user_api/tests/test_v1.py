@@ -6,18 +6,10 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from core.exceptions.username import (
-    UsernameEmptyException,
     UsernameLengthAlphanumericException,
-    UsernameAlreadyExistsException,
     UsernameDidNotExistsException
 )
-from core.exceptions.email import (
-    EmailEmptyException,
-    EmailFormatValidationException,
-    EmailAlreadyExistsException
-)
 from core.exceptions.password import (
-    PasswordEmptyException,
     PasswordLengthException,
     PasswordCharacterValidationException,
     PasswordDidNotExistsException
@@ -34,16 +26,16 @@ class UserAPITest(APITestCase):
     def setUp(self) -> None:
         """This is setup function for the user test
         """
-        self.register_user_url = 'v1:user-register'
-        self.login_user_url = 'v1:user-login'
+        self.register_user_url = 'user_v1:user-registration'
+        self.login_user_url = 'user_v1:user-login'
         self.register_user_1 = {
-            "username": None, "email": "test01@email.com", "password": "&$P4ssw0rd01"
+            "username": "", "email": "test01@email.com", "password": "&$P4ssw0rd01"
         }
         self.register_user_2 = {
-            "username": "username02", "email": None, "password": "&$P4ssw0rd02"
+            "username": "username02", "email": "", "password": "&$P4ssw0rd02"
         }
         self.register_user_3 = {
-            "username": "username03", "email": "test03@email.com", "password": None
+            "username": "username03", "email": "test03@email.com", "password": ""
         }
         self.register_user_4 = {
             "username": "user", "email": "test04@email.com", "password": "&$P4ssw0rd04"
@@ -103,7 +95,7 @@ class UserAPITest(APITestCase):
         response = self.client.post(reverse(self.register_user_url), data=self.register_user_1)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(content['username'], UsernameEmptyException.detail)
+        self.assertEqual(content['username'], ['This field may not be blank.'])
 
     def test_register_empty_email(self):
         """This is user registration test with empty email
@@ -111,7 +103,7 @@ class UserAPITest(APITestCase):
         response = self.client.post(reverse(self.register_user_url), data=self.register_user_2)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['detail'], EmailEmptyException.detail)
+        self.assertEqual(content['email'], ['This field may not be blank.'])
 
     def test_register_empty_password(self):
         """This is user registration test with empty password
@@ -119,7 +111,7 @@ class UserAPITest(APITestCase):
         response = self.client.post(reverse(self.register_user_url), data=self.register_user_3)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['detail'], PasswordEmptyException.detail)
+        self.assertEqual(content['password'], ['This field may not be blank.'])
 
     def test_register_less_username(self):
         """This is user registration test with short username bellow 6 caharacters
@@ -127,7 +119,7 @@ class UserAPITest(APITestCase):
         response = self.client.post(reverse(self.register_user_url), data=self.register_user_4)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['detail'], UsernameLengthAlphanumericException.detail)
+        self.assertEqual(content['detail'], UsernameLengthAlphanumericException().detail)
 
     def test_register_non_alphanumeric_username(self):
         """This is user registration test with non alphanumeric username
@@ -135,7 +127,7 @@ class UserAPITest(APITestCase):
         response = self.client.post(reverse(self.register_user_url), data=self.register_user_5)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['detail'], UsernameLengthAlphanumericException.detail)
+        self.assertEqual(content['detail'], UsernameLengthAlphanumericException().detail)
 
     def test_register_invalid_email(self):
         """This is user registration test with invalid email address
@@ -143,7 +135,7 @@ class UserAPITest(APITestCase):
         response = self.client.post(reverse(self.register_user_url), data=self.register_user_6)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['detail'], EmailFormatValidationException.detail)
+        self.assertEqual(content['email'], ['Enter a valid email address.'])
 
     def test_register_less_password(self):
         """This is user registration test with short password
@@ -151,15 +143,15 @@ class UserAPITest(APITestCase):
         response = self.client.post(reverse(self.register_user_url), data=self.register_user_7)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['detail'], PasswordLengthException.detail)
+        self.assertEqual(content['detail'], PasswordLengthException().detail)
 
     def test_register_invalid_password(self):
         """This is user registration test with invalid password
         """
         response = self.client.post(reverse(self.register_user_url), data=self.register_user_8)
         content = ast.literal_eval(response.content.decode("UTF-8"))
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['detail'], PasswordCharacterValidationException.detail)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(content['detail'], PasswordCharacterValidationException().detail)
 
     def test_register_existing_username(self):
         """This is user registration test with username already exists
@@ -167,7 +159,7 @@ class UserAPITest(APITestCase):
         response = self.client.post(reverse(self.register_user_url), data=self.register_user_9)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['detail'], UsernameAlreadyExistsException.detail)
+        self.assertEqual(content['username'], ['user with this username already exists.'])
 
     def test_register_existing_email(self):
         """This is user registration test with email already exists
@@ -175,7 +167,7 @@ class UserAPITest(APITestCase):
         response = self.client.post(reverse(self.register_user_url), data=self.register_user_10)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['detail'], EmailAlreadyExistsException.detail)
+        self.assertEqual(content['email'], ['user with this email already exists.'])
 
     def test_register_valid_data(self):
         """This is user registration test with valid data
@@ -184,7 +176,7 @@ class UserAPITest(APITestCase):
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(User.objects.filter(username=self.register_user_11['username']).count(), 1)
-        self.assertEqual(response.data['message'], f"User {self.register_user_11['username']} created successfully")
+        self.assertEqual(content['message'], f"User {self.register_user_11['username']} created successfully")
 
     def test_login_empty_username(self):
         """This is user login test with empty username
@@ -192,7 +184,7 @@ class UserAPITest(APITestCase):
         response = self.client.post(reverse(self.login_user_url), data=self.login_user_1)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['detail'], UsernameEmptyException.detail)
+        self.assertEqual(content['username'], ['This field may not be blank.'])
 
     def test_login_empty_password(self):
         """This is user login test with empty password
@@ -200,7 +192,7 @@ class UserAPITest(APITestCase):
         response = self.client.post(reverse(self.login_user_url), data=self.login_user_2)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['detail'], PasswordEmptyException.detail)
+        self.assertEqual(content['password'], ['This field may not be blank.'])
 
     def test_login_wrong_username(self):
         """This is user login test with wrong username
@@ -208,7 +200,7 @@ class UserAPITest(APITestCase):
         response = self.client.post(reverse(self.login_user_url), data=self.login_user_3)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['detail'], UsernameDidNotExistsException.detail)
+        self.assertEqual(content['detail'], UsernameDidNotExistsException().detail)
 
     def test_login_wrong_password(self):
         """This is user login test with wrong password
@@ -216,13 +208,13 @@ class UserAPITest(APITestCase):
         response = self.client.post(reverse(self.login_user_url), data=self.login_user_4)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['detail'], PasswordDidNotExistsException.detail)
+        self.assertEqual(content['detail'], PasswordDidNotExistsException().detail)
 
     def test_login_valid_data(self):
         """This is user login test with valid data
         """
-        response = self.client.post(reverse(self.login_user_url), data=self.register_user_11)
+        response = self.client.post(reverse(self.login_user_url), data=self.login_user_5)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual('access' in response.data, True)
-        self.assertEqual('refresh' in response.data, True)
+        self.assertEqual('access' in content, True)
+        self.assertEqual('refresh' in content, True)
