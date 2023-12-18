@@ -28,7 +28,7 @@ schema_view = get_schema_view(
    openapi.Info(
       title="KAMI Assessment Ravi",
       default_version='v1',
-      description="This is API description for KAMI assessment",
+      description="This is API documentation for KAMI assessment",
       terms_of_service="https://www.google.com/policies/terms/",
       contact=openapi.Contact(email="rvx211@gmail.com"),
       license=openapi.License(name="BSD License"),

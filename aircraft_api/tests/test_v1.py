@@ -105,7 +105,7 @@ class AircraftAPITest(APITestCase):
         response = self.client.post(reverse(self.aircraft_unit_url), data=self.aircraft_unit_1, **self.auth_headers)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(content['detail'], AircraftIDEmptyException().detail)
+        self.assertEqual(content['aircraft_id'], ['A valid integer is required.'])
 
     def test_aircraft_unit_empty_passenger(self):
         """This is aircraft unit calculation test with empty passenger
@@ -113,7 +113,7 @@ class AircraftAPITest(APITestCase):
         response = self.client.post(reverse(self.aircraft_unit_url), data=self.aircraft_unit_2, **self.auth_headers)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(content['detail'], AircraftPassengerEmptyException().detail)
+        self.assertEqual(content['aircraft_passenger'], ['A valid number is required.'])
 
     def test_aircraft_unit_invalid_id(self):
         """This is aircraft unit calculation test with invalid id
@@ -121,45 +121,45 @@ class AircraftAPITest(APITestCase):
         response = self.client.post(reverse(self.aircraft_unit_url), data=self.aircraft_unit_3, **self.auth_headers)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(content['detail'], AircraftIDNotInteger().detail)
+        self.assertEqual(content['aircraft_id'], ['A valid integer is required.'])
 
-    # def test_aircraft_unit_invalid_passenger(self):
-    #     """This is aircraft unit calculation test with invalid passenger
-    #     """
-    #     response = self.client.post(reverse(self.aircraft_unit_url), data=self.aircraft_unit_4, **self.auth_headers)
-    #     print(response.json)
-    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    #     self.assertEqual(response.context['detail'], AircraftPassengerNotInteger.detail)
+    def test_aircraft_unit_invalid_passenger(self):
+        """This is aircraft unit calculation test with invalid passenger
+        """
+        response = self.client.post(reverse(self.aircraft_unit_url), data=self.aircraft_unit_4, **self.auth_headers)
+        content = ast.literal_eval(response.content.decode("UTF-8"))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['aircraft_passenger'], ['A valid number is required.'])
 
-    # def test_aircraft_unit_valid_data(self):
-    #     """This is aircraft unit calculation test with valid data
-    #     """
-    #     response = self.client.post(reverse(self.aircraft_unit_url), data=self.aircraft_unit_5, **self.auth_headers)
-    #     print(response.json)
-    #     fuel_tank_capacity = self.aircraft_unit_5['aircraft_id'] * settings.FUEL_TANK_MULTIPLIER
-    #     basic_fc_per_minute = self.aircraft_unit_5['aircraft_id'] * settings.BASIC_FUEL_MULTIPLIER
-    #     additional_fc_per_minute = self.aircraft_unit_5['aircraft_passenger'] * settings.ADDITIONAL_FUEL_MULTIPLIER
-    #     total_fc_per_minute = basic_fc_per_minute + additional_fc_per_minute
-    #     max_flight_minutes_time = fuel_tank_capacity / total_fc_per_minute
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(response.context['aircraft_total_fuel_consumption_per_minute'], total_fc_per_minute)
-    #     self.assertEqual(response.context['aircraft_maximum_flight_time_in_minutes'], max_flight_minutes_time)
+    def test_aircraft_unit_valid_data(self):
+        """This is aircraft unit calculation test with valid data
+        """
+        response = self.client.post(reverse(self.aircraft_unit_url), data=self.aircraft_unit_5, **self.auth_headers)
+        content = ast.literal_eval(response.content.decode("UTF-8"))
+        fuel_tank_capacity = self.aircraft_unit_5['aircraft_id'] * settings.FUEL_TANK_MULTIPLIER
+        basic_fc_per_minute = self.aircraft_unit_5['aircraft_id'] * settings.BASIC_FUEL_MULTIPLIER
+        additional_fc_per_minute = self.aircraft_unit_5['aircraft_passenger'] * settings.ADDITIONAL_FUEL_MULTIPLIER
+        total_fc_per_minute = basic_fc_per_minute + additional_fc_per_minute
+        max_flight_minutes_time = fuel_tank_capacity / total_fc_per_minute
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(content['aircraft_total_fuel_consumption_per_minute'], total_fc_per_minute)
+        self.assertEqual(content['aircraft_maximum_flight_time_in_minutes'], max_flight_minutes_time)
 
-    # def test_aircraft_list_empty(self):
-    #     """This is aircraft list calculation test with empty list
-    #     """
-    #     response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_1, **self.auth_headers)
-    #     print(response.json)
-    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    #     self.assertEqual(response.context['detail'], AircraftListEmptyException.detail)
+    def test_aircraft_list_empty(self):
+        """This is aircraft list calculation test with empty list
+        """
+        response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_1, **self.auth_headers)
+        content = ast.literal_eval(response.content.decode("UTF-8"))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['aircraft'], ['This field is required.'])
 
-    # def test_aircraft_list_empty_id(self):
-    #     """This is aircraft list calculation test with empty id
-    #     """
-    #     response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_2, **self.auth_headers)
-    #     print(response.json)
-    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    #     self.assertEqual(response.context['detail'], AircraftIDEmptyException.detail)
+    def test_aircraft_list_empty_id(self):
+        """This is aircraft list calculation test with empty id
+        """
+        response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_2, **self.auth_headers)
+        content = ast.literal_eval(response.content.decode("UTF-8"))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['aircraft'], ['This field is required.'])
 
     # def test_aircraft_list_empty_passenger(self):
     #     """This is aircraft list calculation test with empty passenger
@@ -185,17 +185,17 @@ class AircraftAPITest(APITestCase):
     #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     #     self.assertEqual(response.context['detail'], AircraftPassengerNotInteger.detail)
 
-    # def test_aircraft_unit_valid_data(self):
-    #     """This is aircraft list calculation test with valid list
-    #     """
-    #     response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_6, **self.auth_headers)
-    #     print(response.json)
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     for aircraft in response.context['aircraft']:
-    #         fuel_tank_capacity = aircraft['aircraft_id'] * settings.FUEL_TANK_MULTIPLIER
-    #         basic_fc_per_minute = aircraft['aircraft_id'] * settings.BASIC_FUEL_MULTIPLIER
-    #         additional_fc_per_minute = aircraft['aircraft_passenger'] * settings.ADDITIONAL_FUEL_MULTIPLIER
-    #         total_fc_per_minute = basic_fc_per_minute + additional_fc_per_minute
-    #         max_flight_minutes_time = fuel_tank_capacity / total_fc_per_minute
-    #         self.assertEqual(aircraft['aircraft_total_fuel_consumption_per_minute'], total_fc_per_minute)
-    #         self.assertEqual(aircraft['aircraft_maximum_flight_time_in_minutes'], max_flight_minutes_time)
+    def test_aircraft_unit_valid_data(self):
+        """This is aircraft list calculation test with valid list
+        """
+        response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_6, **self.auth_headers)
+        content = ast.literal_eval(response.content.decode("UTF-8"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        for aircraft in response.context['aircraft']:
+            fuel_tank_capacity = aircraft['aircraft_id'] * settings.FUEL_TANK_MULTIPLIER
+            basic_fc_per_minute = aircraft['aircraft_id'] * settings.BASIC_FUEL_MULTIPLIER
+            additional_fc_per_minute = aircraft['aircraft_passenger'] * settings.ADDITIONAL_FUEL_MULTIPLIER
+            total_fc_per_minute = basic_fc_per_minute + additional_fc_per_minute
+            max_flight_minutes_time = fuel_tank_capacity / total_fc_per_minute
+            self.assertEqual(aircraft['aircraft_total_fuel_consumption_per_minute'], total_fc_per_minute)
+            self.assertEqual(aircraft['aircraft_maximum_flight_time_in_minutes'], max_flight_minutes_time)
