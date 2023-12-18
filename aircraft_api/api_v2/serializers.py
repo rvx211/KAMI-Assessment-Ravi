@@ -1,5 +1,6 @@
 """This is aircraft models module"""
 from rest_framework import serializers
+from rest_framework import status
 
 from core.exceptions.aircraft import (
     AircraftIDEmptyException,
@@ -15,8 +16,8 @@ class AircraftSerializer(serializers.ModelSerializer):
     Args:
         serializers (object): Model serializer
     """
-    aircraft_total_fuel_consumption_per_minute = serializers.SerializerMethodField()
-    aircraft_maximum_flight_time_in_minutes = serializers.SerializerMethodField()
+    aircraft_total_fuel_consumption_per_minute = serializers.ReadOnlyField()
+    aircraft_maximum_flight_time_in_minutes = serializers.ReadOnlyField()
 
     class Meta:
         """This is class meta of the aircraft serializer
@@ -55,8 +56,8 @@ class AircraftSerializer(serializers.ModelSerializer):
             value (int): Aircraft passenger
 
         Raises:
-            AircraftIDEmptyException: Aircraft passenger empty exception
-            AircraftIDNotInteger: Aircraft passenger is not integer exception
+            AircraftPassengerEmptyException: Aircraft passenger empty exception
+            AircraftPassengerNotIntegerzz: Aircraft passenger is not integer exception
 
         Returns:
             int: Validated aircraft passenger
@@ -78,8 +79,14 @@ class AircraftSerializer(serializers.ModelSerializer):
         """
         validated_data['aircraft_user'] = self.context.get('user')
         # validated_data['username'] = self.context.get('user').username
-        Aircraft.objects.update_or_create(validated_data)
-        return self.data
+        aircraft = Aircraft.objects.update_or_create(validated_data)[0]
+        return {
+            "aircraft_id": aircraft.aircraft_id,
+            "aircraft_passenger": aircraft.aircraft_passenger,
+            "aircraft_total_fuel_consumption_per_minute": aircraft.aircraft_total_fuel_consumption_per_minute,
+            "aircraft_maximum_flight_time_in_minutes": aircraft.aircraft_maximum_flight_time_in_minutes,
+            "status": status.HTTP_200_OK
+        }
 
 class AircraftListSerializer(serializers.Serializer):
     """This is the aircraft list serializer
@@ -90,7 +97,7 @@ class AircraftListSerializer(serializers.Serializer):
     aircraft = AircraftSerializer(many=True)
     
     class Meta:
-        ref_name = "AircraftListSerializer v1"
+        ref_name = "AircraftListSerializer v2"
 
     def validate_aircraft(self, value: list) -> list:
         """This is validate aircraft list function
@@ -121,7 +128,13 @@ class AircraftListSerializer(serializers.Serializer):
         for aircraft in validated_data['aircraft']:
             aircraft['user'] = self.context.get('user')
             aircraft['username'] = self.context.get('user').username
-            aircraft_serializer = AircraftSerializer(data=aircraft)
+            aircraft_serializer = AircraftSerializer(
+                data=aircraft,
+                context={
+                    "user": self.context.get('user'),
+                    "username": self.context.get('user').username
+                }
+            )
             aircraft_data = {}
             if aircraft_serializer.is_valid():
                 aircraft_data = aircraft_serializer.create(aircraft_serializer.validated_data)
@@ -129,6 +142,7 @@ class AircraftListSerializer(serializers.Serializer):
                 aircraft_data = aircraft_serializer.errors
             aircraft_list.append(aircraft_data)
         validated_data['aircraft'] = aircraft_list
+        validated_data['status'] = status.HTTP_200_OK
         return validated_data
 
     def update(self, instance: object, validated_data: dict):

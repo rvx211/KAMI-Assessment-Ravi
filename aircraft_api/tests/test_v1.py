@@ -1,5 +1,6 @@
 """This is test cases for the aircraft module"""
 import ast
+import json
 
 from django.conf import settings
 from django.urls import reverse
@@ -7,13 +8,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from core.exceptions.aircraft import (
-    AircraftIDEmptyException,
-    AircraftIDNotInteger,
-    AircraftListEmptyException,
-    AircraftPassengerEmptyException,
-    AircraftPassengerNotInteger
-)
+from core.exceptions.aircraft import AircraftListEmptyException
 from user_api.models import User
 
 # Create your tests here.
@@ -36,8 +31,8 @@ class AircraftAPITest(APITestCase):
         self.aircraft_unit_3 = {'aircraft_id': 'a', 'aircraft_passenger': 150}
         self.aircraft_unit_4 = {'aircraft_id': 4, 'aircraft_passenger': 'b'}
         self.aircraft_unit_5 = {'aircraft_id': 5, 'aircraft_passenger': 200}
-        self.aircraft_list_1 = {'aircraft': []}
-        self.aircraft_list_2 = {'aircraft': [
+        self.aircraft_list_1 = json.dumps({'aircraft': []})
+        self.aircraft_list_2 = json.dumps({'aircraft': [
             {'aircraft_id': "", 'aircraft_passenger': 100},
             {'aircraft_id': 1, 'aircraft_passenger': 200},
             {'aircraft_id': 2, 'aircraft_passenger': 200},
@@ -48,8 +43,8 @@ class AircraftAPITest(APITestCase):
             {'aircraft_id': 7, 'aircraft_passenger': 200},
             {'aircraft_id': 8, 'aircraft_passenger': 200},
             {'aircraft_id': 9, 'aircraft_passenger': 200}
-        ]}
-        self.aircraft_list_3 = {'aircraft': [
+        ]})
+        self.aircraft_list_3 = json.dumps({'aircraft': [
             {'aircraft_id': 10, 'aircraft_passenger': ""},
             {'aircraft_id': 1, 'aircraft_passenger': 200},
             {'aircraft_id': 2, 'aircraft_passenger': 200},
@@ -60,8 +55,8 @@ class AircraftAPITest(APITestCase):
             {'aircraft_id': 7, 'aircraft_passenger': 200},
             {'aircraft_id': 8, 'aircraft_passenger': 200},
             {'aircraft_id': 9, 'aircraft_passenger': 200}
-        ]}
-        self.aircraft_list_4 = {'aircraft': [
+        ]})
+        self.aircraft_list_4 = json.dumps({'aircraft': [
             {'aircraft_id': 'a', 'aircraft_passenger': 100},
             {'aircraft_id': 1, 'aircraft_passenger': 200},
             {'aircraft_id': 2, 'aircraft_passenger': 200},
@@ -72,8 +67,8 @@ class AircraftAPITest(APITestCase):
             {'aircraft_id': 7, 'aircraft_passenger': 200},
             {'aircraft_id': 8, 'aircraft_passenger': 200},
             {'aircraft_id': 9, 'aircraft_passenger': 200}
-        ]}
-        self.aircraft_list_5 = {'aircraft': [
+        ]})
+        self.aircraft_list_5 = json.dumps({'aircraft': [
             {'aircraft_id': 10, 'aircraft_passenger': 'a'},
             {'aircraft_id': 1, 'aircraft_passenger': 200},
             {'aircraft_id': 2, 'aircraft_passenger': 200},
@@ -84,8 +79,8 @@ class AircraftAPITest(APITestCase):
             {'aircraft_id': 7, 'aircraft_passenger': 200},
             {'aircraft_id': 8, 'aircraft_passenger': 200},
             {'aircraft_id': 9, 'aircraft_passenger': 200}
-        ]}
-        self.aircraft_list_6 = {'aircraft': [
+        ]})
+        self.aircraft_list_6 = json.dumps({'aircraft': [
             {'aircraft_id': 1, 'aircraft_passenger': 200},
             {'aircraft_id': 2, 'aircraft_passenger': 200},
             {'aircraft_id': 3, 'aircraft_passenger': 200},
@@ -96,7 +91,7 @@ class AircraftAPITest(APITestCase):
             {'aircraft_id': 8, 'aircraft_passenger': 200},
             {'aircraft_id': 9, 'aircraft_passenger': 200},
             {'aircraft_id': 10, 'aircraft_passenger': 200}
-        ]}
+        ]})
         self.auth_headers = {'HTTP_AUTHORIZATION': 'Bearer ' + self.token,}
 
     def test_aircraft_unit_empty_id(self):
@@ -148,50 +143,50 @@ class AircraftAPITest(APITestCase):
     def test_aircraft_list_empty(self):
         """This is aircraft list calculation test with empty list
         """
-        response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_1, **self.auth_headers)
+        response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_1, content_type='application/json', **self.auth_headers)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(content['aircraft'], ['This field is required.'])
+        self.assertEqual(content['detail'], AircraftListEmptyException().detail)
 
     def test_aircraft_list_empty_id(self):
         """This is aircraft list calculation test with empty id
         """
-        response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_2, **self.auth_headers)
+        response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_2, content_type='application/json', **self.auth_headers)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(content['aircraft'], ['This field is required.'])
+        self.assertEqual(content['aircraft'][0]['aircraft_id'], ['A valid integer is required.'])
 
-    # def test_aircraft_list_empty_passenger(self):
-    #     """This is aircraft list calculation test with empty passenger
-    #     """
-    #     response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_3, **self.auth_headers)
-    #     print(response.json)
-    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    #     self.assertEqual(response.context['detail'], AircraftPassengerEmptyException.detail)
+    def test_aircraft_list_empty_passenger(self):
+        """This is aircraft list calculation test with empty passenger
+        """
+        response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_3, content_type='application/json', **self.auth_headers)
+        content = ast.literal_eval(response.content.decode("UTF-8"))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['aircraft'][0]['aircraft_passenger'], ['A valid number is required.'])
 
-    # def test_aircraft_list_invalid_id(self):
-    #     """This is aircraft list calculation test with invalid id
-    #     """
-    #     response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_4, **self.auth_headers)
-    #     print(response.json)
-    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    #     self.assertEqual(response.context['detail'], AircraftIDNotInteger.detail)
+    def test_aircraft_list_invalid_id(self):
+        """This is aircraft list calculation test with invalid id
+        """
+        response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_4, content_type='application/json', **self.auth_headers)
+        content = ast.literal_eval(response.content.decode("UTF-8"))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['aircraft'][0]['aircraft_id'], ['A valid integer is required.'])
 
-    # def test_aircraft_unit_invalid_passenger(self):
-    #     """This is aircraft list calculation test with invalid passenger
-    #     """
-    #     response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_5, **self.auth_headers)
-    #     print(response.json)
-    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    #     self.assertEqual(response.context['detail'], AircraftPassengerNotInteger.detail)
+    def test_aircraft_unit_invalid_passenger(self):
+        """This is aircraft list calculation test with invalid passenger
+        """
+        response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_5, content_type='application/json', **self.auth_headers)
+        content = ast.literal_eval(response.content.decode("UTF-8"))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(content['aircraft'][0]['aircraft_passenger'], ['A valid number is required.'])
 
     def test_aircraft_unit_valid_data(self):
         """This is aircraft list calculation test with valid list
         """
-        response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_6, **self.auth_headers)
+        response = self.client.post(reverse(self.aircraft_list_url), data=self.aircraft_list_6, content_type='application/json', **self.auth_headers)
         content = ast.literal_eval(response.content.decode("UTF-8"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        for aircraft in response.context['aircraft']:
+        for aircraft in content['aircraft']:
             fuel_tank_capacity = aircraft['aircraft_id'] * settings.FUEL_TANK_MULTIPLIER
             basic_fc_per_minute = aircraft['aircraft_id'] * settings.BASIC_FUEL_MULTIPLIER
             additional_fc_per_minute = aircraft['aircraft_passenger'] * settings.ADDITIONAL_FUEL_MULTIPLIER
