@@ -2,7 +2,7 @@
 This is the repository of KAMI Assessment Test for Ravi
 
 # How to use the application
-## Instalation
+## Installation
 1. Install all dependencies to run the application.
 
 `pip install -r requirements.txt`
