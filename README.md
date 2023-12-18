@@ -18,6 +18,7 @@ This is the repository of KAMI Assessment Test for Ravi
 `python manage.py collectstatic`
 
 
+
 ## Run the application
 1. To run the application, simply just run the command bellow:
 
@@ -25,6 +26,7 @@ This is the repository of KAMI Assessment Test for Ravi
 
 
 And the application will be run at http://127.0.0.1:8000
+
 
 2. To run the application test, please run the command below:
 
@@ -36,9 +38,11 @@ or to run specific application test, run the command below:
 
 The application name options are `aircraft_api` and `user_api`.
 
+
 3. To run the code coverage, just run the command below:
 
 `coverage report`
+
 
 
 ## Using the application
@@ -65,6 +69,7 @@ If the user registration is successful, it will return the response as follows:
 }
 ```
 
+
 2. Login the user to get the application token and refresh token with POST method the following URL:
 
 `http://127.0.0.1:8000/v1/user/login/`
@@ -86,6 +91,7 @@ If the user login is successful, it will return the response as follows:
     "access": [access: string of access token],
 }
 ```
+
 
 3. Send the aircraft list request with POST method the following URL:
 
@@ -127,6 +133,7 @@ If the request is successful, it will return the response as follows:
 }
 ```
 
+
 4. To refresh the access token, send the refresh token request with POST method the following URL:
 
 `http://127.0.0.1:8000/v1/user/login/refresh/`
@@ -138,6 +145,7 @@ Set the request parameters with JSON format as follows:
 If the refresh token request is successful, it will return the response as follows:
 
 `{"access": [access: string of access token]}`
+
 
 5. Optionally, the application also could handle single aircraft request with POST method the following URL:
 
