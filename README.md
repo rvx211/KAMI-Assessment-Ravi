@@ -149,7 +149,7 @@ If the refresh token request is successful, it will return the response as follo
 
 5. Optionally, the application also could handle single aircraft request with POST method the following URL:
 
-`http://127.0.0.1:8000/v1/aircraft/calculation/list/`
+`http://127.0.0.1:8000/v1/aircraft/calculation/unit/`
 
 Set the authorization header as follows:
 
