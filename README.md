@@ -22,7 +22,7 @@ This is the repository of KAMI Assessment Test for Ravi
 ## Run the application
 1. To run the application, simply just run the command bellow:
 
-`python -m gunicorn myproject.asgi:application -k uvicorn.workers.UvicornWorker`
+`python -m gunicorn KAMI_Assessment_Ravi.asgi:application -k uvicorn.workers.UvicornWorker`
 
 
 And the application will be run at http://127.0.0.1:8000
